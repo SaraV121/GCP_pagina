@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GCP en asignación presupuestaria · Métodos Numéricos UMSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<nav aria-label="Secciones"><a href="#inicio">Inicio</a><a href="#caso">Caso</a><a href="#formulacion">Formulación</a><a href="#entrada">Entrada de datos</a><a href="#referencia">Referencia</a><a href="#gcp">GCP vs GC</a><a href="#errores">Errores</a><a href="#comparativa">Comparativa</a><a href="#qa">QA</a><a href="#conclusiones">Conclusiones</a></nav>
+<main>
+<header class="hero" id="inicio">
+<h1>Asignación presupuestaria resuelta con Gradientes Conjugados Precondicionado</h1>
+<p>Simulador que reparte un presupuesto entre ocho categorías de gasto, resuelve el sistema Ax = b con un método directo y con GCP, y compara su precisión, condicionamiento y velocidad de convergencia en tres escenarios.</p>
+<div class="meta">
+<label class="f">Estudiante<input value="Camila Sarahí Arias Vargas"></label>
+<label class="f">Mención<input value="Desarrollo de Sistemas"></label>
+<label class="f">Área<input value="Finanzas"></label>
+</div>
+</header>
+
+<section id="caso"><h2>Caso de estudio</h2>
+<p>Una unidad de desarrollo de software debe distribuir un presupuesto anual entre ocho categorías: personal, infraestructura, marketing digital, I+D, capacitación, seguridad informática, soporte y operaciones, y legal y cumplimiento. Cada categoría tiene una necesidad prioritaria y un costo creciente por desviarse de la asignación ideal. Además, las categorías compiten o se complementan entre sí por los mismos fondos.</p>
+<p>Se busca la asignación x que minimiza el costo total de desajuste f(x) = ½ xᵀAx − bᵀx. Como A es simétrica y definida positiva, el mínimo es único y cumple ∇f = Ax − b = 0, es decir, Ax = b.</p>
+<p><strong>Procedencia de los datos:</strong> cifras ilustrativas en miles de Bs, definidas para este ejercicio académico. Pueden reemplazarse por datos reales en la sección de entrada.</p></section>
+
+<section id="formulacion"><h2>Formulación</h2>
+<div class="tw"><table><tr><th class="l">Variable</th><th class="l">Significado financiero (miles de Bs)</th></tr>
+<tr><td>x₁</td><td class="w">Personal: sueldos y beneficios.</td></tr>
+<tr><td>x₂</td><td class="w">Infraestructura: servidores, licencias y nube.</td></tr>
+<tr><td>x₃</td><td class="w">Marketing digital: campañas y posicionamiento.</td></tr>
+<tr><td>x₄</td><td class="w">I+D: prototipos e innovación.</td></tr><tr><td>x₅</td><td class="w">Capacitación: cursos y certificaciones.</td></tr><tr><td>x₆</td><td class="w">Seguridad informática: auditorías y herramientas.</td></tr><tr><td>x₇</td><td class="w">Soporte y operaciones: mantenimiento y atención.</td></tr><tr><td>x₈</td><td class="w">Legal y cumplimiento: normativa y contratos.</td></tr></table></div>
+<p><strong>Coeficientes.</strong> aᵢᵢ es el costo marginal de desajustar la categoría i (más alto, más rígida). aᵢⱼ (i≠j) mide el acoplamiento entre categorías: un valor positivo indica que gastar más en una encarece desviarse en la otra. bᵢ es la necesidad prioritaria de la categoría i.</p>
+<div class="eq" id="sys"></div>
+<h3 style="margin-top:16px">Verificación de A (escenario cargado)</h3>
+<div id="verif"></div></section>
+
+<section id="entrada"><h2>Entrada de datos y escenarios</h2>
+<div class="sc" role="group" aria-label="Escenarios">
+<button data-sc="ideal">Ideal</button><button data-sc="estres">Bajo estrés</button><button data-sc="mal">Mal condicionado</button></div>
+<p id="scdesc"></p>
+<div class="tw"><div class="grid" id="grid"></div></div>
+<div class="cfg">
+<label class="f">Vector inicial x₀ (separado por comas)<input id="x0" value="0,0,0,0,0,0,0,0"></label>
+<label class="f">Tolerancia<input id="tol" value="1e-6"></label>
+<label class="f">Máx. iteraciones<input id="nmax" type="number" value="1000" min="1"></label>
+<label class="f">Precondicionador<select id="pc"><option value="jacobi">Jacobi (diagonal)</option><option value="ssor">SSOR (ω = 1)</option><option value="none">Ninguno</option></select></label>
+</div>
+<div id="alert"></div></section>
+
+<section id="referencia"><h2>Solución de referencia (Cholesky)</h2>
+<p>Se factoriza A = LLᵀ y se resuelve por sustituciones. Es el método directo usado como solución numérica de referencia.</p>
+<div class="tw" id="ref"></div></section>
+
+<section id="gcp"><h2>GCP frente a GC simple</h2>
+<div class="cards" id="cards"></div>
+<div class="tw" id="gcpt"></div>
+<h3>Residuo relativo por iteración</h3><div id="chart"></div></section>
+
+<section id="errores"><h2>Análisis de errores</h2><div class="tw" id="err"></div><div id="errx"></div></section>
+
+<section id="comparativa"><h2>Tabla comparativa de los tres escenarios</h2>
+<p>Se recalcula con los parámetros y el precondicionador elegidos arriba. Los escenarios se leen de sus valores base.</p>
+<div class="tw" id="cmp"></div></section>
+<section id="qa"><h2>Módulo de pruebas (QA)</h2>
+<button id="runqa">Ejecutar pruebas</button>
+<div class="tw" id="qat"></div></section>
+<section id="conclusiones"><h2>Conclusiones y referencias</h2>
+<p><strong>Técnica.</strong> En el escenario ideal, κ(A) es bajo y GC y GCP convergen en pocas iteraciones. En el escenario de estrés el sistema cambia el punto de equilibrio sin alterar mucho el condicionamiento. En el mal condicionado, el escalamiento dispar entre variables eleva κ(A); el precondicionador de Jacobi lo reduce de forma drástica y recorta las iteraciones.</p>
+<p><strong>Financiera.</strong> Una inflación de costos obliga a asignar más a todas las categorías, pero el reparto relativo se mantiene estable. Cuando las categorías se miden en escalas muy distintas, la solución es sensible a errores en los datos, y precondicionar protege la calidad de la asignación calculada.</p>
+<p><strong>Referencias.</strong> Suñagua S., P. (2020). Método de Gradientes Conjugados Precondicionado. <em>Revista Boliviana de Matemática</em>, UMSA.</p>
+<footer>Repositorio de código fuente: añade aquí tu enlace de GitHub/GitLab.</footer></section>
+</main>
+<script src="script.js"></script>
+</body></html>
