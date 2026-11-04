@@ -4,9 +4,10 @@
 - **Mención:** Desarrollo de Sistemas
 - **Área:** Finanzas
 - **Página web:** https://TU-USUARIO.github.io/gcp-asignacion-presupuestaria/
+
 ## Descripción
 
-Simulador web que reparte un presupuesto entre ocho categorías de gasto (Personal, Infraestructura, Marketing digital e I+D, Capacitación, Seguridad informática, Soporte y operaciones, Legal y cumplimiento). El problema se formula como un sistema lineal **Ax = b**, con **A** simétrica y definida positiva, y se resuelve con:
+Simulador web que reparte un presupuesto entre ocho categorías de gasto (Personal, Infraestructura, Marketing digital, I+D, Capacitación, Seguridad informática, Soporte y operaciones, Legal y cumplimiento). El problema se formula como un sistema lineal **Ax = b**, con **A** simétrica y definida positiva, y se resuelve con:
 
 1. un **método directo** (factorización de Cholesky), usado como solución numérica de referencia;
 2. el **Método de Gradientes Conjugados Precondicionado (GCP)**, basado en Suñagua (2020);
@@ -28,6 +29,10 @@ Como A es simétrica y definida positiva, el mínimo es único y cumple Ax = b.
 | x₂ | Infraestructura |
 | x₃ | Marketing digital |
 | x₄ | I+D |
+| x₅ | Capacitación |
+| x₆ | Seguridad informática |
+| x₇ | Soporte y operaciones |
+| x₈ | Legal y cumplimiento |
 
 - **aᵢᵢ:** costo marginal de desajustar la categoría i.
 - **aᵢⱼ (i ≠ j):** acoplamiento entre categorías.
@@ -41,7 +46,7 @@ Los datos son ilustrativos y están definidos para este ejercicio académico.
 |---|---|---|
 | Ideal | A con diagonal dominante y poco acoplamiento | Jacobi |
 | Bajo estrés | Inflación: diagonal de A +10 % y aumento de b | Jacobi |
-| Mal condicionado | A = DCD con D = diag(30, 10, 3, 1): mal escalamiento diagonal | Jacobi |
+| Mal condicionado | A = DCD con una matriz diagonal D de escalas muy distintas: mal escalamiento diagonal | Jacobi |
 
 ## Funcionalidades
 
@@ -57,9 +62,9 @@ Los datos son ilustrativos y están definidos para este ejercicio académico.
 
 ```
 .
-├── index.html   # Estructura y contenido de la página
-├── styles.css   # Estilos (modo claro y oscuro)
-├── app.js       # Lógica numérica, validación, interfaz y pruebas QA
+├── asignacion.html   # Estructura y contenido de la página
+├── style.css   # Estilos (modo claro y oscuro)
+├── script.js       # Lógica numérica, validación, interfaz y pruebas QA
 └── README.md
 ```
 
@@ -67,7 +72,7 @@ Los datos son ilustrativos y están definidos para este ejercicio académico.
 
 Es una aplicación de una sola página, sin frameworks ni dependencias, salvo las fuentes de Google. Todo el cálculo se hace en el navegador.
 
-**Capa numérica (`app.js`)**
+**Capa numérica (`script.js`)**
 
 | Función | Rol |
 |---|---|
@@ -80,7 +85,7 @@ Es una aplicación de una sola página, sin frameworks ni dependencias, salvo la
 | `kPre` | κ(M⁻¹A) mediante la matriz simétrica L⁻¹AL⁻ᵀ, con M = LLᵀ |
 | `analyze` | Ejecuta referencia, GCP, GC y condicionamiento de un escenario |
 
-**Capa de interfaz (`app.js`)**
+**Capa de interfaz (`script.js`)**
 
 | Función | Rol |
 |---|---|
@@ -122,9 +127,9 @@ No hace falta instalar nada.
 
 1. Clona el repositorio o descarga los archivos en una misma carpeta:
    ```
-   git clone https://github.com/TU-USUARIO/gcp-asignacion-presupuestaria.git
+   git clone https://github.com/SaraV121/GCP_pagina.git
    ```
-2. Abre `index.html` con doble clic en cualquier navegador moderno.
+2. Abre `asignacion.html` con doble clic en cualquier navegador moderno.
 
 Si prefieres un servidor local, desde la carpeta del proyecto:
 
@@ -136,10 +141,12 @@ y abre `http://localhost:8000`.
 
 ## Limitaciones
 
-- La interfaz trabaja con n = 4 variables.
+- La interfaz trabaja con n = 8 variables (ocho categorías de gasto).
 - No está implementado el precondicionador de Cholesky incompleto (IC0); se ofrecen Jacobi y SSOR.
-- Con n = 4, el GC termina en 4 iteraciones como máximo, por lo que la ventaja del precondicionador se aprecia sobre todo en κ(M⁻¹A) y no en el número de iteraciones.
+- En aritmética exacta, el GC termina en n iteraciones como máximo; con n = 8 la ventaja del precondicionador puede verse en el número de iteraciones y en κ(M⁻¹A).
 
 ## Referencia
+
+Suñagua S., P. (2020). *Método de Gradientes Conjugados Precondicionado*. Revista Boliviana de Matemática, UMSA.
 
 Suñagua S., P. (2020). *Método de Gradientes Conjugados Precondicionado*. Revista Boliviana de Matemática, UMSA.
