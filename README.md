@@ -147,6 +147,5 @@ y abre `http://localhost:8000`.
 
 ## Referencia
 
-Suñagua S., P. (2020). *Método de Gradientes Conjugados Precondicionado*. Revista Boliviana de Matemática, UMSA.
 
 Suñagua S., P. (2020). *Método de Gradientes Conjugados Precondicionado*. Revista Boliviana de Matemática, UMSA.
