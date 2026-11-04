@@ -3,7 +3,7 @@
 - **Estudiante:** Camila Sarahí Arias Vargas
 - **Mención:** Desarrollo de Sistemas
 - **Área:** Finanzas
-- **Página web:** https://TU-USUARIO.github.io/gcp-asignacion-presupuestaria/
+- **Página web:** https://sarav121.github.io/GCP_pagina/asignacion.html
 
 ## Descripción
 
