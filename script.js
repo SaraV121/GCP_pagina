@@ -4,7 +4,7 @@ const band=(d,c1,c2)=>d.map((di,i)=>d.map((_,j)=>i===j?di:Math.abs(i-j)===1?c1:M
 const DS=[30,10,3,1,20,5,2,.5],IA=band([10,8,6,7,8,9,7,8],1,.5),IB=[120,90,70,70,85,95,60,80];
 const SC={
 ideal:{d:'Presupuesto estable: costos similares y acoplamiento débil entre categorías vecinas. A bien condicionada.',A:IA,b:IB,pc:'jacobi'},
-estres:{d:'Inflación de costos: la rigidez de cada categoría sube 10 % y las necesidades b aumentan entre 10 % y 30 %. El equilibrio se desplaza.',A:IA.map((r,i)=>r.map((v,j)=>i===j?r6(v*1.1):v)),b:IB.map((v,i)=>r6(v*[1.15,1.12,1.2,1.3,1.1,1.18,1.25,1.15][i])),pc:'jacobi'},
+estres:{d:'La inflación desplaza el equilibrio hacia montos mayores en casi todas las categorías; el condicionamiento casi no cambia.',A:IA.map((r,i)=>r.map((v,j)=>i===j?r6(v*1.1):v)),b:IB.map((v,i)=>r6(v*[1.15,1.12,1.2,1.3,1.1,1.18,1.25,1.15][i])),pc:'jacobi'},
 mal:{d:'Las categorías se miden en escalas muy distintas: A = DCD con D = diag(30, 10, 3, 1, 20, 5, 2, 0.5). Mal escalamiento diagonal: se usa Jacobi.',A:band(DS.map(()=>1),.2,.1).map((r,i)=>r.map((v,j)=>r6(v*DS[i]*DS[j]))),b:[30,15,10,8,12,9,7,5].map((v,i)=>r6(v*DS[i])),pc:'jacobi'}};
 let cur='ideal';
 const $=id=>document.getElementById(id);
