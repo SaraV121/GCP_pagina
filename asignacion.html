@@ -21,14 +21,36 @@
 <section id="caso"><h2>Caso de estudio</h2>
 <p>Una unidad de desarrollo de software debe distribuir un presupuesto anual entre ocho categorías: personal, infraestructura, marketing digital, I+D, capacitación, seguridad informática, soporte y operaciones, y legal y cumplimiento. Cada categoría tiene una necesidad prioritaria y un costo creciente por desviarse de la asignación ideal. Además, las categorías compiten o se complementan entre sí por los mismos fondos.</p>
 <p>Se busca la asignación x que minimiza el costo total de desajuste f(x) = ½ xᵀAx − bᵀx. Como A es simétrica y definida positiva, el mínimo es único y cumple ∇f = Ax − b = 0, es decir, Ax = b.</p>
-<p><strong>Procedencia de los datos:</strong> cifras ilustrativas en miles de Bs, definidas para este ejercicio académico. Pueden reemplazarse por datos reales en la sección de entrada.</p></section>
+<p><strong>Procedencia de los datos:</strong> las cifras, en miles de Bs, son supuestos propios definidos para este ejercicio académico, no datos oficiales. Se construyeron con los criterios que se explican a continuación y pueden reemplazarse por datos reales en la sección de entrada.</p>
+
+<h3>Justificación de los datos</h3>
+<p><strong>Rigidez (aᵢᵢ).</strong> Es mayor en las categorías con compromisos difíciles de ajustar en el corto plazo: Personal (sueldos y contratos), Seguridad informática y Legal y cumplimiento (obligaciones que no se pueden recortar sin riesgo). Es menor en las más flexibles, como Marketing digital, I+D y Soporte y operaciones, cuyo gasto puede ajustarse con más facilidad.</p>
+<p><strong>Necesidades (bᵢ).</strong> Reflejan el peso relativo de cada categoría en el presupuesto de la unidad. Personal es la mayor, seguida de Seguridad informática e Infraestructura; Soporte y operaciones es la menor.</p>
+<p><strong>Acoplamientos (aᵢⱼ).</strong> Se asigna un acoplamiento de 1 entre categorías que comparten fondos o dependen una de otra:</p>
+<ul>
+<li>Personal – Infraestructura: más personal exige más equipos y licencias.</li>
+<li>Infraestructura – Marketing digital: las campañas usan plataformas y alojamiento.</li>
+<li>Marketing digital – I+D: lo que se desarrolla debe comunicarse.</li>
+<li>I+D – Capacitación: innovar exige formar al equipo.</li>
+<li>Capacitación – Seguridad informática: formación en buenas prácticas de seguridad.</li>
+<li>Seguridad informática – Soporte y operaciones: los incidentes se atienden con soporte.</li>
+<li>Soporte y operaciones – Legal y cumplimiento: acuerdos de nivel de servicio y obligaciones contractuales.</li>
+</ul>
+<p>Entre categorías separadas por una intermedia, el acoplamiento es indirecto y se reduce a la mitad (0.5). Las demás parejas no se acoplan (0).</p>
+<p><strong>Escenario Bajo estrés.</strong> Modela un alza de costos: la rigidez de cada categoría sube 10 % y las necesidades aumentan entre 10 % y 30 %. El aumento es mayor en I+D, Soporte y operaciones y Marketing digital (más dependientes de herramientas y servicios de terceros) y menor en Capacitación e Infraestructura. Los porcentajes son supuestos, no cifras oficiales.</p>
+<p><strong>Escenario Mal condicionado.</strong> Las categorías se miden en escalas muy distintas (por ejemplo, Personal en cifras mucho mayores que Legal). Se modela con A = DCD, donde D = diag(30, 10, 3, 1, 20, 5, 2, 0.5). Este mal escalamiento diagonal eleva κ(A), y por eso se usa el precondicionador de Jacobi.</p>
+</section>
 
 <section id="formulacion"><h2>Formulación</h2>
 <div class="tw"><table><tr><th class="l">Variable</th><th class="l">Significado financiero (miles de Bs)</th></tr>
 <tr><td>x₁</td><td class="w">Personal: sueldos y beneficios.</td></tr>
 <tr><td>x₂</td><td class="w">Infraestructura: servidores, licencias y nube.</td></tr>
 <tr><td>x₃</td><td class="w">Marketing digital: campañas y posicionamiento.</td></tr>
-<tr><td>x₄</td><td class="w">I+D: prototipos e innovación.</td></tr><tr><td>x₅</td><td class="w">Capacitación: cursos y certificaciones.</td></tr><tr><td>x₆</td><td class="w">Seguridad informática: auditorías y herramientas.</td></tr><tr><td>x₇</td><td class="w">Soporte y operaciones: mantenimiento y atención.</td></tr><tr><td>x₈</td><td class="w">Legal y cumplimiento: normativa y contratos.</td></tr></table></div>
+<tr><td>x₄</td><td class="w">I+D: prototipos e innovación.</td></tr>
+<tr><td>x₅</td><td class="w">Capacitación: cursos y certificaciones.</td></tr>
+<tr><td>x₆</td><td class="w">Seguridad informática: auditorías y herramientas.</td></tr>
+<tr><td>x₇</td><td class="w">Soporte y operaciones: mantenimiento y atención.</td></tr>
+<tr><td>x₈</td><td class="w">Legal y cumplimiento: normativa y contratos.</td></tr></table></div>
 <p><strong>Coeficientes.</strong> aᵢᵢ es el costo marginal de desajustar la categoría i (más alto, más rígida). aᵢⱼ (i≠j) mide el acoplamiento entre categorías: un valor positivo indica que gastar más en una encarece desviarse en la otra. bᵢ es la necesidad prioritaria de la categoría i.</p>
 <div class="eq" id="sys"></div>
 <h3 style="margin-top:16px">Verificación de A (escenario cargado)</h3>
@@ -61,14 +83,16 @@
 <section id="comparativa"><h2>Tabla comparativa de los tres escenarios</h2>
 <p>Se recalcula con los parámetros y el precondicionador elegidos arriba. Los escenarios se leen de sus valores base.</p>
 <div class="tw" id="cmp"></div></section>
+
 <section id="qa"><h2>Módulo de pruebas (QA)</h2>
 <button id="runqa">Ejecutar pruebas</button>
 <div class="tw" id="qat"></div></section>
+
 <section id="conclusiones"><h2>Conclusiones y referencias</h2>
 <p><strong>Técnica.</strong> En el escenario ideal, κ(A) es bajo y GC y GCP convergen en pocas iteraciones. En el escenario de estrés el sistema cambia el punto de equilibrio sin alterar mucho el condicionamiento. En el mal condicionado, el escalamiento dispar entre variables eleva κ(A); el precondicionador de Jacobi lo reduce de forma drástica y recorta las iteraciones.</p>
 <p><strong>Financiera.</strong> Una inflación de costos obliga a asignar más a todas las categorías, pero el reparto relativo se mantiene estable. Cuando las categorías se miden en escalas muy distintas, la solución es sensible a errores en los datos, y precondicionar protege la calidad de la asignación calculada.</p>
-<p><strong>Referencias.</strong> Suñagua S., P. (2020). Método de Gradientes Conjugados Precondicionado. <em>Revista Boliviana de Matemática</em>, UMSA.</p>
-<footer> https://github.com/SaraV121/GCP_pagina.git</footer></section>
+<p><strong>Referencias.</strong> Suñagua S., P. (2020). Método de Gradientes Conjugados Precondicionado. <em>Revista Boliviana de Matemática</em>, UMSA. Datos: supuestos propios, elaboración propia.</p>
+<footer>Repositorio de código fuente: <a href="https://github.com/SaraV121/GCP_pagina">github.com/SaraV121/GCP_pagina</a></footer></section>
 </main>
 <script src="script.js"></script>
 </body></html>
