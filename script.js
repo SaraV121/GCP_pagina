@@ -4,7 +4,7 @@ const band=(d,c1,c2)=>d.map((di,i)=>d.map((_,j)=>i===j?di:Math.abs(i-j)===1?c1:M
 const DS=[30,10,3,1,20,5,2,.5],IA=band([10,8,6,7,8,9,7,8],1,.5),IB=[120,90,70,70,85,95,60,80];
 const SC={
 ideal:{d:'Presupuesto estable: costos similares y acoplamiento débil entre categorías vecinas. A bien condicionada.',A:IA,b:IB,pc:'jacobi'},
-estres:{d:'La inflación desplaza el equilibrio hacia montos mayores en casi todas las categorías; el condicionamiento casi no cambia.',A:IA.map((r,i)=>r.map((v,j)=>i===j?r6(v*1.1):v)),b:IB.map((v,i)=>r6(v*[1.15,1.12,1.2,1.3,1.1,1.18,1.25,1.15][i])),pc:'jacobi'},
+estres:{d:'Inflación de costos: la rigidez de cada categoría sube 10 % y las necesidades b aumentan entre 10 % y 30 %. El equilibrio se desplaza.',A:IA.map((r,i)=>r.map((v,j)=>i===j?r6(v*1.1):v)),b:IB.map((v,i)=>r6(v*[1.15,1.12,1.2,1.3,1.1,1.18,1.25,1.15][i])),pc:'jacobi'},
 mal:{d:'Mismo modelo del escenario ideal, con cada categoría medida en una unidad distinta: A = D·A_ideal·D y b = D·b_ideal, con D = diag(30, 10, 3, 1, 20, 5, 2, 0.5). La asignación financiera es la misma; solo cambia la escala de cada variable. Mal escalamiento diagonal: se usa Jacobi.',A:IA.map((r,i)=>r.map((v,j)=>r6(v*DS[i]*DS[j]))),b:IB.map((v,i)=>r6(v*DS[i])),pc:'jacobi'}};
 let cur='ideal';
 const $=id=>document.getElementById(id);
@@ -63,6 +63,7 @@ function interp(k,R){const r=R[k];if(!r.v.ok)return '—';const i=R.ideal;
 if(k==='ideal')return `Equilibrio estable: se asignan ${sum(r.xr).toFixed(1)} miles de Bs en total, κ(A) = ${r.kA.toFixed(2)} y el GCP converge en ${r.g.iters} iteraciones (GC: ${r.c.iters}).`;
 if(k==='estres')return i.v.ok?`La inflación eleva la asignación total de ${sum(i.xr).toFixed(1)} a ${sum(r.xr).toFixed(1)} miles de Bs (suben ${r.xr.filter((x,j)=>x>i.xr[j]).length} de ${N} categorías); κ(A) pasa de ${i.kA.toFixed(2)} a ${r.kA.toFixed(2)}.`:'—';
 return `La asignación real es la del escenario ideal; solo cambia la escala de cada variable. κ(A) = ${r.kA.toFixed(0)} baja a κ(M⁻¹A) = ${r.kM.toFixed(2)} y el GCP necesita ${r.g.iters} iteraciones frente a ${r.c.iters} del GC.`}
+function cmp(p){const names={ideal:'Ideal',estres:'Bajo estrés',mal:'Mal condicionado'},R={};for(const k in SC)R[k]=analyze(SC[k].A,SC[k].b,p.x0,p.pc,p.tol,p.nmax);
 const row=(l,fn)=>[l,...Object.keys(SC).map(k=>R[k].v.ok?fn(R[k]):'—')];
 $('cmp').innerHTML=table(['Indicador',...Object.values(names)],[
 row('Solución de referencia',r=>vec(r.xr)),row('Solución GCP',r=>vec(r.g.x)),
