@@ -121,24 +121,6 @@ Con x₀ (por defecto 0) y r₀ = b − Ax₀:
 
 Se ejecutan desde la sección **Módulo de pruebas (QA)** con el botón **Ejecutar pruebas**.
 
-## Ejecución local
-
-No hace falta instalar nada.
-
-1. Clona el repositorio o descarga los archivos en una misma carpeta:
-   ```
-   git clone https://github.com/SaraV121/GCP_pagina.git
-   ```
-2. Abre `asignacion.html` con doble clic en cualquier navegador moderno.
-
-Si prefieres un servidor local, desde la carpeta del proyecto:
-
-```
-python -m http.server 8000
-```
-
-y abre `http://localhost:8000`.
-
 ## Limitaciones
 
 - La interfaz trabaja con n = 8 variables (ocho categorías de gasto).
