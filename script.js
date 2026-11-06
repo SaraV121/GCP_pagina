@@ -5,7 +5,7 @@ const DS=[30,10,3,1,20,5,2,.5],IA=band([10,8,6,7,8,9,7,8],1,.5),IB=[120,90,70,70
 const SC={
 ideal:{d:'Presupuesto estable: costos similares y acoplamiento débil entre categorías vecinas. A bien condicionada.',A:IA,b:IB,pc:'jacobi'},
 estres:{d:'La inflación desplaza el equilibrio hacia montos mayores en casi todas las categorías; el condicionamiento casi no cambia.',A:IA.map((r,i)=>r.map((v,j)=>i===j?r6(v*1.1):v)),b:IB.map((v,i)=>r6(v*[1.15,1.12,1.2,1.3,1.1,1.18,1.25,1.15][i])),pc:'jacobi'},
-mal:{d:'Las categorías se miden en escalas muy distintas: A = DCD con D = diag(30, 10, 3, 1, 20, 5, 2, 0.5). Mal escalamiento diagonal: se usa Jacobi.',A:band(DS.map(()=>1),.2,.1).map((r,i)=>r.map((v,j)=>r6(v*DS[i]*DS[j]))),b:[30,15,10,8,12,9,7,5].map((v,i)=>r6(v*DS[i])),pc:'jacobi'}};
+mal:{d:'Mismo modelo del escenario ideal, con cada categoría medida en una unidad distinta: A = D·A_ideal·D y b = D·b_ideal, con D = diag(30, 10, 3, 1, 20, 5, 2, 0.5). La asignación financiera es la misma; solo cambia la escala de cada variable. Mal escalamiento diagonal: se usa Jacobi.',A:IA.map((r,i)=>r.map((v,j)=>r6(v*DS[i]*DS[j]))),b:IB.map((v,i)=>r6(v*DS[i])),pc:'jacobi'}};
 let cur='ideal';
 const $=id=>document.getElementById(id);
 const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),nrm=a=>Math.sqrt(dot(a,a));
@@ -58,7 +58,7 @@ $('gcpt').innerHTML=table(['Método','Vector aproximado','Iteraciones','Residuo 
 $('chart').innerHTML=chart(R.g,R.c,p.tol);
 $('err').innerHTML=table(['Variable','x referencia','x GCP','Error absoluto','Error relativo','Error porcentual (%)'],R.xr.map((x,i)=>{const ea=Math.abs(x-R.g.x[i]);return['x'+sub[i],f(x),f(R.g.x[i]),f(ea),x===0?'no definido':f(ea/Math.abs(x)),x===0?'no definido':f(ea/Math.abs(x)*100)]}));
 const rr=nrm(p.b.map((v,i)=>v-mv(p.A,R.g.x)[i]))/nrm(p.b);$('errx').innerHTML=`<p>Residuo relativo global ‖b − Ax_GCP‖₂ / ‖b‖₂ = <strong>${f(rr)}</strong></p>`;cmp(p)}
-const INT={ideal:'Equilibrio estable: la asignación refleja las necesidades y converge con pocas iteraciones.',estres:'La inflación desplaza el equilibrio hacia montos mayores; el condicionamiento casi no cambia.',mal:'El mal escalamiento eleva κ(A); el precondicionador recupera una convergencia rápida y estable.'};
+const INT={ideal:'Equilibrio estable: la asignación refleja las necesidades y converge con pocas iteraciones.',estres:'La inflación desplaza el equilibrio hacia montos mayores en casi todas las categorías; el condicionamiento casi no cambia.',mal:'El mal escalamiento eleva κ(A) sin cambiar la asignación real; el precondicionador de Jacobi lo devuelve al valor del escenario ideal.'};
 function cmp(p){const names={ideal:'Ideal',estres:'Bajo estrés',mal:'Mal condicionado'},R={};for(const k in SC)R[k]=analyze(SC[k].A,SC[k].b,p.x0,p.pc,p.tol,p.nmax);
 const row=(l,fn)=>[l,...Object.keys(SC).map(k=>R[k].v.ok?fn(R[k]):'—')];
 $('cmp').innerHTML=table(['Indicador',...Object.values(names)],[
