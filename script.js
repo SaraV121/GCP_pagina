@@ -58,15 +58,18 @@ $('gcpt').innerHTML=table(['Método','Vector aproximado','Iteraciones','Residuo 
 $('chart').innerHTML=chart(R.g,R.c,p.tol);
 $('err').innerHTML=table(['Variable','x referencia','x GCP','Error absoluto','Error relativo','Error porcentual (%)'],R.xr.map((x,i)=>{const ea=Math.abs(x-R.g.x[i]);return['x'+sub[i],f(x),f(R.g.x[i]),f(ea),x===0?'no definido':f(ea/Math.abs(x)),x===0?'no definido':f(ea/Math.abs(x)*100)]}));
 const rr=nrm(p.b.map((v,i)=>v-mv(p.A,R.g.x)[i]))/nrm(p.b);$('errx').innerHTML=`<p>Residuo relativo global ‖b − Ax_GCP‖₂ / ‖b‖₂ = <strong>${f(rr)}</strong></p>`;cmp(p)}
-const INT={ideal:'Equilibrio estable: la asignación refleja las necesidades y converge con pocas iteraciones.',estres:'La inflación desplaza el equilibrio hacia montos mayores en casi todas las categorías; el condicionamiento casi no cambia.',mal:'El mal escalamiento eleva κ(A) sin cambiar la asignación real; el precondicionador de Jacobi lo devuelve al valor del escenario ideal.'};
-function cmp(p){const names={ideal:'Ideal',estres:'Bajo estrés',mal:'Mal condicionado'},R={};for(const k in SC)R[k]=analyze(SC[k].A,SC[k].b,p.x0,p.pc,p.tol,p.nmax);
+const sum=a=>a.reduce((s,v)=>s+v,0);
+function interp(k,R){const r=R[k];if(!r.v.ok)return '—';const i=R.ideal;
+if(k==='ideal')return `Equilibrio estable: se asignan ${sum(r.xr).toFixed(1)} miles de Bs en total, κ(A) = ${r.kA.toFixed(2)} y el GCP converge en ${r.g.iters} iteraciones (GC: ${r.c.iters}).`;
+if(k==='estres')return i.v.ok?`La inflación eleva la asignación total de ${sum(i.xr).toFixed(1)} a ${sum(r.xr).toFixed(1)} miles de Bs (suben ${r.xr.filter((x,j)=>x>i.xr[j]).length} de ${N} categorías); κ(A) pasa de ${i.kA.toFixed(2)} a ${r.kA.toFixed(2)}.`:'—';
+return `La asignación real es la del escenario ideal; solo cambia la escala de cada variable. κ(A) = ${r.kA.toFixed(0)} baja a κ(M⁻¹A) = ${r.kM.toFixed(2)} y el GCP necesita ${r.g.iters} iteraciones frente a ${r.c.iters} del GC.`}
 const row=(l,fn)=>[l,...Object.keys(SC).map(k=>R[k].v.ok?fn(R[k]):'—')];
 $('cmp').innerHTML=table(['Indicador',...Object.values(names)],[
 row('Solución de referencia',r=>vec(r.xr)),row('Solución GCP',r=>vec(r.g.x)),
 row('Error absoluto (Ea)',r=>vec(r.xr.map((x,i)=>Math.abs(x-r.g.x[i])))),
 row('Error porcentual (Ep %)',r=>vec(r.xr.map((x,i)=>x===0?NaN:Math.abs(x-r.g.x[i])/Math.abs(x)*100))),
 row('Iteraciones GC',r=>r.c.iters),row('Iteraciones GCP',r=>r.g.iters),row('κ(A)',r=>f(r.kA)),row('κ(M⁻¹A)',r=>f(r.kM)),row('Residuo relativo final GCP',r=>f(r.g.res)),row('¿Convergió?',r=>r.g.conv?'Sí':'No'),
-['Interpretación financiera',...Object.keys(SC).map(k=>`<span style="white-space:normal;display:block;min-width:200px;text-align:left">${INT[k]}</span>`)]])}
+['Interpretación financiera',...Object.keys(SC).map(k=>`<span style="white-space:normal;display:block;min-width:200px;text-align:left">${interp(k,R)}</span>`)]])}
 function qa(){const p=read(),S=k=>SC[k],T=[],P={x0:Array(N).fill(0),tol:1e-6,nmax:1000};
 const run=k=>analyze(S(k).A,S(k).b,P.x0,'jacobi',P.tol,P.nmax);
 let o=['ideal','estres','mal'].map(k=>{const r=run(k);return k+': '+(r.v.ok&&r.g.conv?'OK ('+r.g.iters+' it.)':'falla')});
